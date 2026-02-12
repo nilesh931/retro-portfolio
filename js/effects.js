@@ -82,48 +82,6 @@ function initEyes() {
   });
 }
 
-// === FAKE POPUP SYSTEM ===
-const popupMessages = [
-  { title: 'CONGRATULATIONS!!!', icon: '🎉', message: 'You are the 1,000,000th visitor to this page!!!', buttons: ['Claim Prize', 'Claim BIGGER Prize'] },
-  { title: 'Warning', icon: '⚠️', message: 'Your computer has been infected with TOO MUCH SWAG', buttons: ['OK', 'More Swag Please'] },
-  { title: 'System Alert', icon: '🤖', message: 'AI has detected that you are AWESOME. No action needed.', buttons: ['I Know', 'Tell Me More'] },
-  { title: 'Hot Singles Alert', icon: '🔥', message: 'Hot GTM Engineers in your area want to optimize your funnel!', buttons: ['Optimize Now', 'My Funnel Is Fine'] },
-  { title: 'Clippy Says:', icon: '📎', message: 'It looks like you\'re trying to browse a website. Would you like help with that?', buttons: ['Yes Please', 'Go Away Clippy'] },
-  { title: 'Free Download!!!', icon: '💿', message: 'Download more RAM for FREE! (only 420 easy payments of $0.01)', buttons: ['DOWNLOAD', 'I Need More RAM'] },
-  { title: 'Security Warning', icon: '🛡️', message: 'This website is protected by WEB 1.0 SECURITY STANDARDS (aka nothing)', buttons: ['Cool', 'I Feel Safe'] },
-];
-
-let popupCount = 0;
-const MAX_POPUPS = 3;
-
-function showFakePopup() {
-  if (popupCount >= MAX_POPUPS) return;
-
-  const msg = popupMessages[Math.floor(Math.random() * popupMessages.length)];
-  const popup = document.createElement('div');
-  popup.className = 'fake-popup active';
-  popup.style.top = (50 + Math.random() * 300) + 'px';
-  popup.style.left = (50 + Math.random() * (window.innerWidth - 450)) + 'px';
-
-  popup.innerHTML = `
-    <div class="fake-popup-titlebar">
-      <span>${msg.title}</span>
-      <span class="close-btn" onclick="this.closest('.fake-popup').remove(); popupCount--;">X</span>
-    </div>
-    <div class="fake-popup-body">
-      <div class="popup-icon">${msg.icon}</div>
-      <p>${msg.message}</p>
-      ${msg.buttons.map(b => `<button onclick="this.closest('.fake-popup').remove(); popupCount--; showFakePopup();">${b}</button>`).join(' ')}
-    </div>
-  `;
-
-  document.body.appendChild(popup);
-  popupCount++;
-
-  // Make it draggable
-  makeDraggable(popup);
-}
-
 function makeDraggable(el) {
   const titlebar = el.querySelector('.fake-popup-titlebar');
   let offsetX, offsetY, isDragging = false;
@@ -132,7 +90,7 @@ function makeDraggable(el) {
     isDragging = true;
     offsetX = e.clientX - el.offsetLeft;
     offsetY = e.clientY - el.offsetTop;
-    el.style.zIndex = 10000 + popupCount;
+    el.style.zIndex = 10001;
   });
 
   document.addEventListener('mousemove', (e) => {
@@ -145,11 +103,6 @@ function makeDraggable(el) {
     isDragging = false;
   });
 }
-
-// Show first popup after 5 seconds, then randomly
-setTimeout(showFakePopup, 5000);
-setTimeout(showFakePopup, 15000);
-setTimeout(showFakePopup, 30000);
 
 // === VISITOR COUNTER (FAKE, obviously) ===
 function initVisitorCounter() {
@@ -276,28 +229,6 @@ function activateKonamiMode() {
   }, 2000);
 }
 
-// === RIGHT-CLICK TROLL ===
-document.addEventListener('contextmenu', (e) => {
-  e.preventDefault();
-  const popup = document.createElement('div');
-  popup.className = 'fake-popup active';
-  popup.style.top = e.clientY + 'px';
-  popup.style.left = Math.min(e.clientX, window.innerWidth - 350) + 'px';
-  popup.innerHTML = `
-    <div class="fake-popup-titlebar">
-      <span>Nice Try! 😏</span>
-      <span class="close-btn" onclick="this.closest('.fake-popup').remove();">X</span>
-    </div>
-    <div class="fake-popup-body">
-      <div class="popup-icon">🚫</div>
-      <p>You cannot steal my <b>epic HTML code</b>!<br>This site is protected by <i>Web 1.0 DRM</i>.</p>
-      <button onclick="this.closest('.fake-popup').remove();">I'm Sorry</button>
-    </div>
-  `;
-  document.body.appendChild(popup);
-  makeDraggable(popup);
-});
-
 // === INIT ALL EFFECTS ===
 document.addEventListener('DOMContentLoaded', () => {
   initEyes();
@@ -305,24 +236,4 @@ document.addEventListener('DOMContentLoaded', () => {
   initDancingLetters();
   initMatrixRain();
 
-  // Start with a welcome "popup"
-  setTimeout(() => {
-    const welcomePopup = document.createElement('div');
-    welcomePopup.className = 'fake-popup active';
-    welcomePopup.style.top = '100px';
-    welcomePopup.style.left = Math.max(50, (window.innerWidth / 2) - 200) + 'px';
-    welcomePopup.innerHTML = `
-      <div class="fake-popup-titlebar">
-        <span>Welcome to the INFORMATION SUPERHIGHWAY!</span>
-        <span class="close-btn" onclick="this.closest('.fake-popup').remove();">X</span>
-      </div>
-      <div class="fake-popup-body">
-        <div class="popup-icon">🌐</div>
-        <p><b>Welcome, traveler!</b><br>You have reached the WORLD WIDE WEB.<br>Please set your resolution to 800x600 for the best experience.</p>
-        <button onclick="this.closest('.fake-popup').remove();">Enter the Cyber Zone</button>
-      </div>
-    `;
-    document.body.appendChild(welcomePopup);
-    makeDraggable(welcomePopup);
-  }, 1500);
 });
