@@ -27,7 +27,7 @@
 .tanay-header .subtitle {
   font-family: 'Rubik Glitch', system-ui;
   font-size: clamp(14px, 3vw, 22px);
-  color: var(--neon-yellow);
+  color: #2970c9;
 }
 
 /* Profile pic */
@@ -37,11 +37,11 @@
   margin: 0 auto;
   border-radius: 50%;
   overflow: hidden;
-  border: 5px solid gold;
+  border: 5px solid #2970c9;
   box-shadow:
-    0 0 20px var(--neon-pink),
-    0 0 40px var(--neon-blue),
-    0 0 60px var(--neon-pink);
+    0 0 20px rgba(41, 112, 201, 0.4),
+    0 0 40px rgba(26, 90, 184, 0.3),
+    0 0 60px rgba(41, 112, 201, 0.2);
   animation: avatar-pulse 2s ease-in-out infinite alternate;
   position: relative;
 }
@@ -56,16 +56,16 @@
 @keyframes avatar-pulse {
   0% {
     box-shadow:
-      0 0 20px var(--neon-pink),
-      0 0 40px var(--neon-blue),
-      0 0 60px var(--neon-pink);
+      0 0 20px rgba(41, 112, 201, 0.4),
+      0 0 40px rgba(26, 90, 184, 0.3),
+      0 0 60px rgba(41, 112, 201, 0.2);
     transform: scale(1);
   }
   100% {
     box-shadow:
-      0 0 30px var(--neon-blue),
-      0 0 60px var(--neon-pink),
-      0 0 90px var(--neon-blue);
+      0 0 30px rgba(26, 90, 184, 0.5),
+      0 0 60px rgba(41, 112, 201, 0.3),
+      0 0 90px rgba(26, 90, 184, 0.2);
     transform: scale(1.05);
   }
 }
@@ -89,27 +89,27 @@
 }
 
 .cert-badge.clay {
-  background: rgba(255, 102, 0, 0.2);
-  border-color: #ff6600;
-  color: #ff9944;
+  background: rgba(41, 112, 201, 0.1);
+  border-color: #2970c9;
+  color: #1a5ab8;
 }
 
 .cert-badge.lindy {
-  background: rgba(0, 255, 255, 0.2);
-  border-color: #00ffff;
-  color: #00ffff;
+  background: rgba(26, 90, 184, 0.1);
+  border-color: #1a5ab8;
+  color: #1a5ab8;
 }
 
 .cert-badge.bots {
-  background: rgba(255, 0, 255, 0.2);
-  border-color: #ff00ff;
-  color: #ff66ff;
+  background: rgba(74, 138, 216, 0.1);
+  border-color: #4a8ad8;
+  color: #2970c9;
 }
 
 .cert-badge.accenture {
-  background: rgba(160, 0, 255, 0.2);
-  border-color: #a000ff;
-  color: #cc66ff;
+  background: rgba(41, 112, 201, 0.1);
+  border-color: #2970c9;
+  color: #1a5ab8;
 }
 
 @keyframes badge-glow {
@@ -140,12 +140,12 @@
   width: 3px;
   background: repeating-linear-gradient(
     180deg,
-    var(--neon-pink) 0px,
-    var(--neon-pink) 10px,
-    var(--neon-blue) 10px,
-    var(--neon-blue) 20px,
-    var(--neon-green) 20px,
-    var(--neon-green) 30px
+    #2970c9 0px,
+    #2970c9 10px,
+    #4a8ad8 10px,
+    #4a8ad8 20px,
+    #1a5ab8 20px,
+    #1a5ab8 30px
   );
 }
 
@@ -153,8 +153,8 @@
   margin-left: 40px;
   padding: 10px;
   margin-bottom: 10px;
-  border: 1px dashed var(--neon-pink);
-  background: rgba(255, 0, 255, 0.05);
+  border: 1px dashed #a0b8d8;
+  background: rgba(41, 112, 201, 0.05);
   position: relative;
 }
 
@@ -169,19 +169,19 @@
 .timeline-item h4 {
   font-family: var(--silkscreen);
   font-size: 11px;
-  color: var(--neon-yellow);
+  color: #1a5ab8;
   margin-bottom: 4px;
 }
 
 .timeline-item .timeline-company {
   font-family: var(--comic-sans);
-  color: var(--neon-blue);
+  color: #2970c9;
   font-size: 13px;
 }
 
 .timeline-item .timeline-desc {
   font-family: var(--comic-sans);
-  color: #ccccff;
+  color: #2a3a5a;
   font-size: 12px;
   margin-top: 4px;
 }
