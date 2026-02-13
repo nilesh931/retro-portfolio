@@ -1,239 +1,167 @@
 /* ============================================
-   SHARED EFFECTS ENGINE
-   "We put the FUN in dysFUNctional"
+   GTM ENGINEERS COHORT #1 — Modern Effects Engine
+   Smooth scroll reveals, count-up, progress bars
    ============================================ */
 
-// === SPARKLE CURSOR TRAIL ===
-const sparkleEmojis = ['✨', '⭐', '💫', '🌟', '✴️', '🔥', '💖', '⚡'];
-let sparkleThrottle = 0;
+// === SCROLL REVEAL (Intersection Observer) ===
+function initScrollReveal() {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          // Stagger siblings for grid items
+          const parent = entry.target.parentElement;
+          const siblings = parent ? Array.from(parent.querySelectorAll('.reveal')) : [];
+          const index = siblings.indexOf(entry.target);
+          const delay = index >= 0 ? index * 80 : 0;
 
-document.addEventListener('mousemove', (e) => {
-  sparkleThrottle++;
-  if (sparkleThrottle % 3 !== 0) return;
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, delay);
 
-  const sparkle = document.createElement('div');
-  sparkle.className = 'sparkle';
-  sparkle.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
-  sparkle.style.left = (e.clientX + (Math.random() - 0.5) * 20) + 'px';
-  sparkle.style.top = (e.clientY + (Math.random() - 0.5) * 20) + 'px';
-  sparkle.style.fontSize = (12 + Math.random() * 16) + 'px';
-  document.body.appendChild(sparkle);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+  );
 
-  setTimeout(() => sparkle.remove(), 800);
-});
-
-// === SNOWFALL (but make it emojis) ===
-const snowEmojis = ['❄️', '🌸', '⭐', '✨', '🦋', '🌈', '💎', '🎀', '🍕'];
-
-function createSnowflake() {
-  const flake = document.createElement('div');
-  flake.className = 'snowflake';
-  flake.textContent = snowEmojis[Math.floor(Math.random() * snowEmojis.length)];
-  flake.style.left = Math.random() * 100 + 'vw';
-  flake.style.fontSize = (14 + Math.random() * 20) + 'px';
-  flake.style.animationDuration = (4 + Math.random() * 6) + 's';
-  flake.style.opacity = 0.4 + Math.random() * 0.6;
-  document.body.appendChild(flake);
-
-  setTimeout(() => flake.remove(), 10000);
+  document.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
 }
 
-setInterval(createSnowflake, 600);
+// === NAVBAR SCROLL EFFECT ===
+function initNavScroll() {
+  const nav = document.getElementById('nav');
+  if (!nav) return;
 
-// === FLOATING EMOJIS FROM BOTTOM ===
-const floatEmojis = ['🚀', '🔥', '💯', '🎉', '🤖', '🧠', '💰', '⚡', '🎸', '👾'];
-
-function createFloatingEmoji() {
-  const emoji = document.createElement('div');
-  emoji.className = 'floating-emoji';
-  emoji.textContent = floatEmojis[Math.floor(Math.random() * floatEmojis.length)];
-  emoji.style.left = Math.random() * 100 + 'vw';
-  emoji.style.animationDuration = (4 + Math.random() * 4) + 's';
-  document.body.appendChild(emoji);
-
-  setTimeout(() => emoji.remove(), 8000);
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        nav.classList.toggle('scrolled', window.scrollY > 20);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
 }
 
-setInterval(createFloatingEmoji, 2000);
+// === MOBILE MENU TOGGLE ===
+function initMobileMenu() {
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('mobile-menu');
+  if (!toggle || !menu) return;
 
-// === EYES THAT FOLLOW MOUSE ===
-function initEyes() {
-  const eyes = document.querySelectorAll('.eye');
+  toggle.addEventListener('click', () => {
+    menu.classList.toggle('open');
+  });
 
-  document.addEventListener('mousemove', (e) => {
-    eyes.forEach(eye => {
-      const pupil = eye.querySelector('.pupil');
-      const rect = eye.getBoundingClientRect();
-      const eyeCenterX = rect.left + rect.width / 2;
-      const eyeCenterY = rect.top + rect.height / 2;
-
-      const angle = Math.atan2(e.clientY - eyeCenterY, e.clientX - eyeCenterX);
-      const maxDist = 10;
-      const dist = Math.min(
-        Math.hypot(e.clientX - eyeCenterX, e.clientY - eyeCenterY) / 10,
-        maxDist
-      );
-
-      const x = Math.cos(angle) * dist;
-      const y = Math.sin(angle) * dist;
-
-      pupil.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+  // Close on link click
+  menu.querySelectorAll('.mobile-link').forEach((link) => {
+    link.addEventListener('click', () => {
+      menu.classList.remove('open');
     });
   });
-}
 
-function makeDraggable(el) {
-  const titlebar = el.querySelector('.fake-popup-titlebar');
-  let offsetX, offsetY, isDragging = false;
-
-  titlebar.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    offsetX = e.clientX - el.offsetLeft;
-    offsetY = e.clientY - el.offsetTop;
-    el.style.zIndex = 10001;
-  });
-
-  document.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    el.style.left = (e.clientX - offsetX) + 'px';
-    el.style.top = (e.clientY - offsetY) + 'px';
-  });
-
-  document.addEventListener('mouseup', () => {
-    isDragging = false;
+  // Close on outside click
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && !toggle.contains(e.target)) {
+      menu.classList.remove('open');
+    }
   });
 }
 
-// === VISITOR COUNTER (FAKE, obviously) ===
-function initVisitorCounter() {
-  const counter = document.getElementById('visitor-count');
-  if (!counter) return;
+// === COUNT-UP ANIMATION ===
+function initCountUp() {
+  const counters = document.querySelectorAll('[data-count]');
+  if (!counters.length) return;
 
-  // Generate a convincingly fake number
-  let count = 48173 + Math.floor(Math.random() * 1000);
-  const digits = counter.querySelectorAll('.odo-digit');
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const target = parseInt(el.getAttribute('data-count'), 10);
+          animateCount(el, 0, target, 1200);
+          observer.unobserve(el);
+        }
+      });
+    },
+    { threshold: 0.5 }
+  );
 
-  function updateCounter() {
-    count += Math.floor(Math.random() * 3);
-    const str = count.toString().padStart(digits.length, '0');
-    digits.forEach((d, i) => {
-      d.textContent = str[i];
-    });
+  counters.forEach((el) => observer.observe(el));
+}
+
+function animateCount(el, start, end, duration) {
+  const startTime = performance.now();
+
+  function update(currentTime) {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(start + (end - start) * eased);
+    el.textContent = current;
+
+    if (progress < 1) {
+      requestAnimationFrame(update);
+    } else {
+      el.textContent = end;
+    }
   }
 
-  updateCounter();
-  setInterval(updateCounter, 3000 + Math.random() * 5000);
+  requestAnimationFrame(update);
 }
 
-// === DANCING LETTERS ===
-function initDancingLetters() {
-  document.querySelectorAll('.dance-text').forEach(el => {
-    const text = el.textContent;
-    el.textContent = '';
-    [...text].forEach((char, i) => {
-      const span = document.createElement('span');
-      span.className = 'dance-letter';
-      span.textContent = char === ' ' ? '\u00A0' : char;
-      span.style.animationDelay = (i * 0.08) + 's';
-      // Random colors per letter
-      const colors = ['#ff0000', '#ff7700', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff'];
-      span.style.color = colors[i % colors.length];
-      el.appendChild(span);
-    });
-  });
+// === PROGRESS BAR ANIMATION ===
+function initProgressBars() {
+  const bars = document.querySelectorAll('.progress-fill[data-width]');
+  if (!bars.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const el = entry.target;
+          const width = el.getAttribute('data-width');
+          setTimeout(() => {
+            el.style.width = width + '%';
+          }, 300);
+          observer.unobserve(el);
+        }
+      });
+    },
+    { threshold: 0.3 }
+  );
+
+  bars.forEach((el) => observer.observe(el));
 }
 
-// === MATRIX RAIN BACKGROUND ===
-function initMatrixRain() {
-  const canvas = document.getElementById('matrix-canvas');
-  if (!canvas) return;
+// === SMOOTH SCROLL FOR ANCHOR LINKS ===
+function initSmoothScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (e) => {
+      const targetId = anchor.getAttribute('href');
+      if (targetId === '#') return;
 
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  const chars = 'アイウエオカキクケコサシスセソタチツテトCLAYGTM01BOTSCODE';
-  const fontSize = 14;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = new Array(columns).fill(1);
-
-  function draw() {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = '#0f0';
-    ctx.font = fontSize + 'px monospace';
-
-    for (let i = 0; i < drops.length; i++) {
-      const char = chars[Math.floor(Math.random() * chars.length)];
-      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
-
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
+      const target = document.querySelector(targetId);
+      if (target) {
+        e.preventDefault();
+        const navHeight = 60;
+        const top = target.getBoundingClientRect().top + window.scrollY - navHeight;
+        window.scrollTo({ top, behavior: 'smooth' });
       }
-      drops[i]++;
-    }
-  }
-
-  setInterval(draw, 50);
-
-  window.addEventListener('resize', () => {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    });
   });
 }
 
-// === KONAMI CODE EASTER EGG ===
-const konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-let konamiIndex = 0;
-
-document.addEventListener('keydown', (e) => {
-  if (e.key === konamiCode[konamiIndex]) {
-    konamiIndex++;
-    if (konamiIndex === konamiCode.length) {
-      konamiIndex = 0;
-      activateKonamiMode();
-    }
-  } else {
-    konamiIndex = 0;
-  }
-});
-
-function activateKonamiMode() {
-  document.body.style.animation = 'spin360 2s linear';
-  setTimeout(() => {
-    document.body.style.animation = '';
-    // Spawn 50 emojis
-    for (let i = 0; i < 50; i++) {
-      setTimeout(createFloatingEmoji, i * 50);
-    }
-    // Show special popup
-    const popup = document.createElement('div');
-    popup.className = 'fake-popup active';
-    popup.style.top = '50%';
-    popup.style.left = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
-    popup.innerHTML = `
-      <div class="fake-popup-titlebar">
-        <span>SECRET UNLOCKED!!! 🎮</span>
-        <span class="close-btn" onclick="this.closest('.fake-popup').remove();">X</span>
-      </div>
-      <div class="fake-popup-body">
-        <div class="popup-icon">🏆</div>
-        <p style="font-size:16px;"><b>YOU FOUND THE KONAMI CODE!</b><br>You are now a certified 1337 h4x0r</p>
-        <button onclick="this.closest('.fake-popup').remove();">I AM THE CHOSEN ONE</button>
-      </div>
-    `;
-    document.body.appendChild(popup);
-    makeDraggable(popup);
-  }, 2000);
-}
-
-// === INIT ALL EFFECTS ===
+// === INIT ALL ===
 document.addEventListener('DOMContentLoaded', () => {
-  initEyes();
-  initVisitorCounter();
-  initDancingLetters();
-  initMatrixRain();
-
+  initScrollReveal();
+  initNavScroll();
+  initMobileMenu();
+  initCountUp();
+  initProgressBars();
+  initSmoothScroll();
 });
